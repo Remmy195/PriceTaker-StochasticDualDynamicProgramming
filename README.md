@@ -39,7 +39,7 @@ Pkg.add("StatsPlots")
 - Detailed information can be found in the [SDDP.jl documentation](https://sddp.dev/stable).
 
 #### License
-- This project is under the [MIT License](LICENSE.md).
+- This project is under the [MIT License](LICENSE).
 
 #### Contact
 - [Remi Akinwonmi / reak4480@colorado.edu]
