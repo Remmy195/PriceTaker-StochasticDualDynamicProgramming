@@ -13,6 +13,7 @@ Companion code to Remi Akinwonmi's 2023 Master's Thesis "A stochastic dual dynam
       - SDDP
       - Clustering
       - StatsPlots
+      - Distributions
 
 You can install these packages by running the following commands in your Julia environment:
 
@@ -25,6 +26,7 @@ Pkg.add("Plots")
 Pkg.add("SDDP")
 Pkg.add("Clustering")
 Pkg.add("StatsPlots")
+Pkg.add("Distributions")
 ```
 
 #### Scripts Overview
