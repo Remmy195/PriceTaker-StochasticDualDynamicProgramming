@@ -8,7 +8,6 @@
 using JuMP, CSV, DataFrames, Gurobi, Plots, BenchmarkTools, Distributions, XLSX, Tables
 const GRB_ENV = Gurobi.Env()
 
-# Function Definitions
 # Optimal Control Model
 function optimize_price_deterministic(data, h, price)
     Ptaker = Model(() -> Gurobi.Optimizer(GRB_ENV))
@@ -140,7 +139,6 @@ h_values = [24, 48, 168, 336, 720]
 loop = 100
 
 for h in h_values
-    # Initialize a dictionary to hold results for each column for this 'h' value
     results_dict = Dict{String, DataFrame}()
 
     i = 1  # Initialize the iteration counter
@@ -149,29 +147,24 @@ for h in h_values
         results_df, objective_val, summary = optimize_price_deterministic(data, h, price)
         print(summary)
 
-        # Loop over each column in results_df and store data in results_dict
         for col in names(results_df)
-            # Initialize DataFrame for this column if it doesn't exist
             if !haskey(results_dict, col)
                 results_dict[col] = DataFrame()
             end
-            # Add iteration data as a new column
             results_dict[col][!, "Iteration_$i"] = results_df[!, col]
         end
 
         println("Objective Value for h=$(h): ", objective_val)
-        i += 1  # Increment iteration counter
+        i += 1
     end
 
     # Write the data to an Excel file for this 'h' value
     excel_filename = "/projects/reak4480/Documents/Results/Monte_Carlo/Deterministic_results_h$(h).xlsx"
     XLSX.openxlsx(excel_filename, mode="w") do xf
         for (col_name, df) in results_dict
-            # Create or get a worksheet named after the column
             sheetname = col_name  # Using the column name as the sheet name
             sheet = XLSX.addsheet!(xf, sheetname)
-    
-            # Write DataFrame to the sheet
+                # Write DataFrame to the sheet
             XLSX.writetable!(sheet, df, anchor_cell=XLSX.CellRef("A1"))
         end
     end
