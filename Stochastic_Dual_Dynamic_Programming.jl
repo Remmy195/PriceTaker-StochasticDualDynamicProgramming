@@ -6,7 +6,7 @@
 
 # Load Packages
 using CSV, DataFrames, Gurobi, Plots, SDDP, Base.Filesystem, Clustering, StatsPlots, Distributions
-const GRB_ENV = Gurobi.Env()
+const GRB_ENV = Gurobi.Env() # This setup reuses a single Gurobi environment (GRB_ENV) for multiple model solves by passing the GRB_ENV object to Gurobi.Optimizer
 
 # Function Definitions
 # Data Loading Function
