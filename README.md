@@ -30,12 +30,12 @@ Pkg.add("Distributions")
 ```
 
 #### Scripts Overview
-- `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electeicity price uncertainity.
+- `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electeicity price uncertainity. It performs In-Sample and Out-of-Sample simulations of the policy
 - `Stochastic_Dual_Dynamic_Programming_RH.jl`: Focuses on rolling horizon implementations in stochastic dual dynamic programming, enhancing short-term decision accuracy.
-- `SDDP_OoS_Simulator.jl`: Conducts out-of-sample testing of strategies, crucial for understanding model performance in unseen market scenarios.
-- `SDDP_OoS_Historic_Simulation.jl`: Conducts out-of-sample testing of strategies using historical or forecasted price data. This can be used to compare model performance with deterministic optimal control with perfect foresight.
 - `Deterministic_Optimal_Control.jl`: Offers deterministic control solutions for perfect foresight market scenarios.
 - `Deterministic_Optimal_Control_RH.jl`: Rolling horizon approach in deterministic optimal control
+
+To run `Stochastic_Dual_Dynamic_Programming.jl` Set parameters and the distribution of random variable. The initial Bound on the objective value is estimated by running `Monte_Carlo_Simulation.jl` for a large number of scenarios and using the mean and confidence interval of the objective values to calibrate the Bound. `Stochastic_Dual_Dynamic_Programming.jl` performs In-Sample and Out-of-Sample evaluations of the SDDP policy. Set the type of policy evaluation.  For out_of_sample_historic simulation, provide a vector of prices.
 
 #### Documentation
 - Detailed information can be found in the [SDDP.jl documentation](https://sddp.dev/stable).
