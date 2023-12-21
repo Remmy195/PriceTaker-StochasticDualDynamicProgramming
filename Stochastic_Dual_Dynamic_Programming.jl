@@ -111,7 +111,7 @@ function create_sddp_markov_graph(reduced_scenarios, k, num_budget)
 end
 
 # Function to Define and Train SDDP Model
-function define_and_train_sddp_model(graph, h, bound, cut_filename)
+function define_and_train_sddp_model(graph, h, bound, cut_filename, iter_count)
     # Define the SDDP Model
     Ptaker = SDDP.PolicyGraph(
         graph;
@@ -171,7 +171,7 @@ function define_and_train_sddp_model(graph, h, bound, cut_filename)
     # Train the SDDP Model
     SDDP.train(
         Ptaker;
-        iteration_limit = 200,
+        iteration_limit = iter_count,
         #time_limit = 14400.0,
         log_file = "SDDP_$h.log",
         #stopping_rules = [SDDP.BoundStalling(10, 1e-4)],
@@ -184,30 +184,29 @@ function define_and_train_sddp_model(graph, h, bound, cut_filename)
 end
 
 ######## Simulation and Data Extraction Function
-# Function to Perform In-sample, Simulator Out-of-Sample, and Closest Nodes Out-of-Sample Simulations
-function simulate_and_extract_data(Ptaker, n_replications, n_replication, data, graph, method_type)
-    # In-sample simulation
-    in_sample_simulations = SDDP.simulate(
-        Ptaker,
-        n_replications,
-        Symbol[:e_stored, :e_charge, :e_discharge, :z_charge, :z_discharge, :e_sold, :e_pur]
-    )
-    
-    # Standard out-of-sample simulation
-    out_of_sample_simulator = SDDP.simulate(
-        Ptaker,
-        n_replications,
-        Symbol[:e_stored, :e_charge, :e_discharge, :z_charge, :z_discharge, :e_sold, :e_pur];
-        sampling_scheme = SDDP.SimulatorSamplingScheme(() -> simulate_prices(data, method_type))
-    )
-
-    # Closest nodes out-of-sample simulation
-    out_of_sample_historic = simulate_with_closest_nodes(Ptaker, data, graph, n_replication)
-
-    println("Completed all simulations.")
-
-    # Return both sets of simulations
-    return in_sample_simulations, out_of_sample_simulator, out_of_sample_historic
+# Function to Perform Specific Type of Simulation
+function simulate_and_extract_data(Ptaker, n_replications, n_replication, data, graph, method_type, simulation_type)
+    if simulation_type == :in_sample
+        # In-sample simulation
+        return SDDP.simulate(
+            Ptaker,
+            n_replications,
+            Symbol[:e_stored, :e_charge, :e_discharge, :z_charge, :z_discharge, :e_sold, :e_pur]
+        )
+    elseif simulation_type == :out_of_sample_simulator
+        # Standard out-of-sample simulation
+        return SDDP.simulate(
+            Ptaker,
+            n_replications,
+            Symbol[:e_stored, :e_charge, :e_discharge, :z_charge, :z_discharge, :e_sold, :e_pur];
+            sampling_scheme = SDDP.SimulatorSamplingScheme(() -> simulate_prices(data, method_type))
+        )
+    elseif simulation_type == :out_of_sample_historic
+        # Closest nodes out-of-sample simulation
+        return simulate_with_closest_nodes(Ptaker, data, graph, n_replication)
+    else
+        error("Invalid simulation type")
+    end
 end
 
 # Function to simulate the policy using closest nodes for out-of-sample testing
@@ -591,6 +590,9 @@ Iter = 1000
 #Number of nodes for the policy graph
 num_budget = 20_000
 
+# Number of iterations for the training termination
+num_iterations = 3
+
 # Set number of policy simulations
 n_replications = 100
 n_replication = 1 # For historic price simulation, we are only simulating one sequence of noise
@@ -616,13 +618,21 @@ h_values = [24, 48, 168, 336, 720]
 # READ https://sddp.dev/stable/tutorial/warnings/#Choosing-an-initial-bound FOR MORE INFORMATION ON CHOOSING THE BOUND
 bounds = [35_000_000, 40_000_000, 50_000_000, 50_000_000, 70_000_000]
 
+# Specify the type of simulation you want to run here
+policy_simulation_type = :in_sample  # or pass :in_sample, :out_of_sample_simulator, :out_of_sample_historic
+
 # Run the model for different discharge durations with respective bounds
 for (h, bound) in zip(h_values, bounds)
-    cut_filename = "sddp_model_cuts_$h.json" # Filename for saving cuts
-    Ptaker = define_and_train_sddp_model(graph, h, bound, cut_filename)
-    in_sample_simulations, out_of_sample_simulator, out_of_sample_historic = simulate_and_extract_data(Ptaker, n_replications, n_replication, data, graph, method_type)
-    analyze_and_plot_in_sample_simulations(in_sample_simulations, Ptaker, h)
-    analyze_and_plot_out_of_sample_simulator(out_of_sample_simulator, Ptaker, h)
-    analyze_and_plot_out_of_sample_historic(out_of_sample_historic, Ptaker, h)
+    cut_filename = "sddp_model_cuts_$h.json"  # Filename for saving cuts
+    Ptaker = define_and_train_sddp_model(graph, h, bound, cut_filename, num_iterations)
+    simulation_results = simulate_and_extract_data(Ptaker, n_replications, n_replication, data, graph, method_type, policy_simulation_type)
+
+    if policy_simulation_type == :in_sample
+        analyze_and_plot_in_sample_simulations(simulation_results, Ptaker, h)
+    elseif policy_simulation_type == :out_of_sample_simulator
+        analyze_and_plot_out_of_sample_simulator(simulation_results, Ptaker, h)
+    elseif policy_simulation_type == :out_of_sample_historic
+        analyze_and_plot_out_of_sample_historic(simulation_results, Ptaker, h)
+    end
 end
 #################################################################################################
