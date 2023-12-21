@@ -1,13 +1,14 @@
-#######################################################################################################
-#######################################################################################################
-# Optimization of Long-Duration Energy Storage Price Taker Using A Deterministic Optimal Control Model 
-#######################################################################################################
-#######################################################################################################
+#############################################################################################################
+#############################################################################################################
+# Optimization of Long-Duration Energy Storage Price Taker - Monte Carlo Deterministic Optimal Control Model 
+#############################################################################################################
+#############################################################################################################
 
 # Load Packages
 using JuMP, CSV, DataFrames, Gurobi, Plots, BenchmarkTools, Distributions, XLSX, Tables
 const GRB_ENV = Gurobi.Env()
 
+# Function Definitions
 # Optimal Control Model
 function optimize_price_deterministic(data, h, price)
     Ptaker = Model(() -> Gurobi.Optimizer(GRB_ENV))
@@ -107,64 +108,92 @@ function optimize_price_deterministic(data, h, price)
 end
 
 
-function simulator(data)
-    # Student's t-distribution parameters
-    df = 4.30  # Degrees of Freedom
-    loc = 0.51 # Location
-    scale = 6.16 # Scale
 
+# Scenario Generation Function
+function simulate_prices(data, method_type)
     price = zeros(8760)
-    for t in 1:8760
-        ε = rand(TDist(df), 1)[1] * scale + loc  # Sample from the Student's t-distribution
-        price[t] =
-            -10.5073 * data.S1[t] +  7.1459 * data.C1[t] +
-            2.9938 * data.S2[t] +  3.6828 * data.C2[t] +
-            0.6557 * data.S3[t] +  1.9710 * data.C3[t] + 
-            0.9151 * data.S4[t] + -1.4882 * data.C4[t] + 
-            0.0000705481036188987 * data.Load[t] +
-            -0.000673131618513161 * data.VRE[t] +
-            25.6773336136185 + ε
+
+    if method_type == :t_distribution
+        # Student's t-distribution parameters
+        df = 4.30  # Degrees of Freedom
+        loc = 0.51 # Location
+        scale = 6.16 # Scale
+        
+        for t in 1:8760
+            ε = rand(TDist(df), 1)[1] * scale + loc
+            price[t] = calculate_price(data, t) + ε
+        end
+    elseif method_type == :normal_distribution
+        # Normal distribution parameters
+        μ, α = 0, 9.05372307007077 # Mean, SD 
+
+        for t in 1:8760
+            ε = μ + α * randn()
+            price[t] = calculate_price(data, t) + ε
+        end
+    else
+        error("Invalid method type")
     end
+
     return price
 end
-##############################################################################################################
+
+function calculate_price(data, t)
+    return -10.5073 * data.S1[t] +  7.1459 * data.C1[t] +
+           2.9938 * data.S2[t] +  3.6828 * data.C2[t] +
+           0.6557 * data.S3[t] +  1.9710 * data.C3[t] + 
+           0.9151 * data.S4[t] + -1.4882 * data.C4[t] + 
+           0.0000705481036188987 * data.Load[t] +
+           -0.000673131618513161 * data.VRE[t] +
+           25.6773336136185
+end
+
 ###################################################################################################################################
 # Main Script Execution
 ###################################################################################################################################
 # Define the directory path and filename
 data = CSV.read("/projects/reak4480/Documents/SDDP_Hourly.csv", DataFrames.DataFrame)
 
+#Distribution
+method_type = :normal_distribution #or pass :t_distribution if using a student t distribution
+
 # Define the different scenarios for discharge duration 'h'
-h_values = [24, 48, 168, 336, 720]
-loop = 100
+h_values = [24]#, 48, 168, 336, 720]
+loop = 2
 
 for h in h_values
+    # Initialize a dictionary to hold results for each column for this 'h' value
     results_dict = Dict{String, DataFrame}()
 
     i = 1  # Initialize the iteration counter
     while i <= loop
-        price = simulator(data)
+        price = simulate_prices(data, method_type)
         results_df, objective_val, summary = optimize_price_deterministic(data, h, price)
         print(summary)
 
+        # Loop over each column in results_df and store data in results_dict
         for col in names(results_df)
+            # Initialize DataFrame for this column if it doesn't exist
             if !haskey(results_dict, col)
                 results_dict[col] = DataFrame()
             end
+            # Add iteration data as a new column
             results_dict[col][!, "Iteration_$i"] = results_df[!, col]
         end
 
         println("Objective Value for h=$(h): ", objective_val)
-        i += 1
+        i += 1  # Increment iteration counter
     end
 
     # Write the data to an Excel file for this 'h' value
-    excel_filename = "/projects/reak4480/Documents/Results/Monte_Carlo/Deterministic_results_h$(h).xlsx"
+    excel_filename = "/projects/reak4480/Documents/Results/Monte_Carlo/test_Deterministic_results_h$(h).xlsx"
     XLSX.openxlsx(excel_filename, mode="w") do xf
         for (col_name, df) in results_dict
+            # Create or get a worksheet named after the column
             sheetname = col_name  # Using the column name as the sheet name
             sheet = XLSX.addsheet!(xf, sheetname)
-                # Write DataFrame to the sheet
+    
+            # Write DataFrame to the sheet
             XLSX.writetable!(sheet, df, anchor_cell=XLSX.CellRef("A1"))
         end
     end
