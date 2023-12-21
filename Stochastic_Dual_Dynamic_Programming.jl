@@ -591,7 +591,7 @@ Iter = 1000
 num_budget = 20_000
 
 # Number of iterations for the training termination
-num_iterations = 3
+num_iterations = 200
 
 # Set number of policy simulations
 n_replications = 100
