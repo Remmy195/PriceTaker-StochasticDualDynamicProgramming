@@ -66,13 +66,13 @@ function plot_scenarios(data, n_plot, method_type)
         plot!(p, 1:8760, new_scenario, label=nothing, legend=false)
         frame(anim, p)
     end
-    gif(anim, "/projects/reak4480/Documents/Plots/SDDP_8760/norm/SDDP_animation.gif", fps = 5)
+    gif(anim, "SDDP_animation.gif", fps = 5)
 end
 
 # Static Price Plot Function
 function static_price_plot(data, n_plot, method_type)
     Plots.plot([simulate_prices(data, method_type) for _ in 1:n_plot], legend = false, xlabel = "Hour", ylabel = "Price [\$/MW]")
-    Plots.savefig("/projects/reak4480/Documents/Plots/SDDP_8760/norm/static_price_plot.png")
+    Plots.savefig("static_price_plot.png")
 end
 
 # Scenario Reduction Function Using K-Means Clustering
@@ -90,7 +90,7 @@ function plot_reduced_scenarios(reduced_scenarios)
     xlabel!("Price")
     ylabel!("Frequency")
     title!("Price Scenario Distribution")
-    Plots.savefig("/projects/reak4480/Documents/Plots/SDDP_8760/norm/reduced_scenario_histogram.png")
+    Plots.savefig("reduced_scenario_histogram.png")
 end
 
 # Function to Create and Return Markovian Graph for SDDP Model
@@ -173,7 +173,7 @@ function define_and_train_sddp_model(graph, h, bound, cut_filename)
         Ptaker;
         iteration_limit = 200,
         #time_limit = 14400.0,
-        log_file = "/projects/reak4480/Documents/norm/SDDP_$h.log",
+        log_file = "SDDP_$h.log",
         #stopping_rules = [SDDP.BoundStalling(10, 1e-4)],
     )
 
@@ -240,12 +240,12 @@ end
 # Function to Analyze and Plot Simulations
 function analyze_and_plot_in_sample_simulations(simulations, Ptaker, h_label)
     # Modify file paths to include h_label in the filenames
-    results_filepath = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/In_objective_values_and_confidence_interval_h$(h_label).txt"
-    node_index_plot_path = "/projects/reak4480/Documents/Plots/SDDP_8760/norm/hourly_node_index_h$(h_label).png"
-    price_noise_plot_path = "/projects/reak4480/Documents/Plots/SDDP_8760/norm/hourly_price_realizations_h$(h_label).png"
-    spaghetti_plot_path = "/projects/reak4480/Documents/Plots/SDDP_8760/norm/SDDP_spaghetti_plot_h$(h_label).html"
-    price_realization = "/projects/reak4480/Documents/Plots/SDDP_8760/norm/SDDP_price_realizations_8760_h$(h_label).csv"
-    SOC_realization = "/projects/reak4480/Documents/Plots/SDDP_8760/norm/SDDP_SOC_realizations_8760_h$(h_label).csv"
+    results_filepath = "In_objective_values_and_confidence_interval_h$(h_label).txt"
+    node_index_plot_path = "hourly_node_index_h$(h_label).png"
+    price_noise_plot_path = "hourly_price_realizations_h$(h_label).png"
+    spaghetti_plot_path = "SDDP_spaghetti_plot_h$(h_label).html"
+    price_realization = "SDDP_price_realizations_8760_h$(h_label).csv"
+    SOC_realization = "SDDP_SOC_realizations_8760_h$(h_label).csv"
     
     # Calculate Objective Values and Confidence Interval
     objectives = map(simulations) do simulation
@@ -350,17 +350,17 @@ function analyze_and_plot_in_sample_simulations(simulations, Ptaker, h_label)
                 return sim[symbol]
             end
         end
-        Plots.savefig("/projects/reak4480/Documents/Plots/SDDP_8760/norm/SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
+        Plots.savefig("SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
     end
 end
 
 # Function to Analyze and Plot Simulations
 function analyze_and_plot_out_of_sample_simulator(simulations, Ptaker, h_label)
     # Modify file paths to include h_label in the filenames
-    results_filepath = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/OoS_Simulator_objective_values_and_confidence_interval_h$(h_label).txt"
-    node_index_plot_path = "/projects/reak4480/Documents/Plots/SDDP_Simulator/norm/hourly_node_index_h$(h_label).png"
-    spaghetti_plot_path = "/projects/reak4480/Documents/Plots/SDDP_Simulator/norm/SDDP_spaghetti_plot_h$(h_label).html"
-    price_realization = "/projects/reak4480/Documents/Plots/SDDP_Simulator/norm/SDDP_price_realizations_8760_h$(h_label).csv"
+    results_filepath = "OoS_Simulator_objective_values_and_confidence_interval_h$(h_label).txt"
+    node_index_plot_path = "hourly_node_index_h$(h_label).png"
+    spaghetti_plot_path = "SDDP_spaghetti_plot_h$(h_label).html"
+    price_realization = "SDDP_price_realizations_8760_h$(h_label).csv"
     
     # Calculate Objective Values and Confidence Interval
     objectives = map(simulations) do simulation
@@ -442,20 +442,20 @@ function analyze_and_plot_out_of_sample_simulator(simulations, Ptaker, h_label)
                 return sim[symbol]
             end
         end
-        Plots.savefig("/projects/reak4480/Documents/Plots/SDDP_Simulator/norm/SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
+        Plots.savefig("SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
     end
 end
 
 # Function to Analyze and Plot out_of_sample_historic Simulations
 function analyze_and_plot_out_of_sample_historic(simulations, Ptaker, h_label)
     # Modify file paths to include h_label in the filenames
-    results_filepath = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/OoS_Historical_objective_values_and_confidence_interval_h$(h_label).txt"
-    node_index_plot_path = "/projects/reak4480/Documents/Plots/SDDP_Historical/norm/hourly_node_index_h$(h_label).png"
-    price_noise_plot_path = "/projects/reak4480/Documents/Plots/SDDP_Historical/norm/hourly_price_realizations_h$(h_label).png"
-    spaghetti_plot_path = "/projects/reak4480/Documents/Plots/SDDP_Historical/norm/SDDP_spaghetti_plot_h$(h_label).html"
-    SOC_result = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/OoS_Historical_SOC_values_h$(h_label).txt"
-    discharge_result = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/OoS_Historical_e_discharge_values_h$(h_label).txt"
-    charge_result = "/projects/reak4480/Documents/Results/SDDP_Model_Results/norm/OoS_Historical_e_charge_values_h$(h_label).txt"
+    results_filepath = "OoS_Historical_objective_values_and_confidence_interval_h$(h_label).txt"
+    node_index_plot_path = "hourly_node_index_h$(h_label).png"
+    price_noise_plot_path = "hourly_price_realizations_h$(h_label).png"
+    spaghetti_plot_path = "SDDP_spaghetti_plot_h$(h_label).html"
+    SOC_result = "SDDP_Model_Results/norm/OoS_Historical_SOC_values_h$(h_label).txt"
+    discharge_result = "SDDP_Model_Results/norm/OoS_Historical_e_discharge_values_h$(h_label).txt"
+    charge_result = "SDDP_Model_Results/norm/OoS_Historical_e_charge_values_h$(h_label).txt"
 
     # Calculate Objective Values and Confidence Interval
     objectives = map(simulations) do simulation
@@ -566,7 +566,7 @@ function analyze_and_plot_out_of_sample_historic(simulations, Ptaker, h_label)
                 return sim[symbol]
             end
         end
-        Plots.savefig("/projects/reak4480/Documents/Plots/SDDP_Historical/norm/SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
+        Plots.savefig("SDDP_$(replace(title, " " => "_"))_h$(h_label).png")
     end
 end
 
@@ -574,7 +574,7 @@ end
 # Main Script Execution
 #################################################################################################
 # Load data
-data = load_data("/projects/reak4480/Documents/SDDP_Hourly.csv")
+data = load_data("SDDP_Hourly.csv")
 
 # Number of Scenarios
 num_scenarios = 10_000
@@ -618,7 +618,7 @@ bounds = [35_000_000, 40_000_000, 50_000_000, 50_000_000, 70_000_000]
 
 # Run the model for different discharge durations with respective bounds
 for (h, bound) in zip(h_values, bounds)
-    cut_filename = "/projects/reak4480/Documents/norm/sddp_model_cuts_$h.json" # Filename for saving cuts
+    cut_filename = "sddp_model_cuts_$h.json" # Filename for saving cuts
     Ptaker = define_and_train_sddp_model(graph, h, bound, cut_filename)
     in_sample_simulations, out_of_sample_simulator, out_of_sample_historic = simulate_and_extract_data(Ptaker, n_replications, n_replication, data, graph, method_type)
     analyze_and_plot_in_sample_simulations(in_sample_simulations, Ptaker, h)
