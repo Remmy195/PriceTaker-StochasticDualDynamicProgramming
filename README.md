@@ -1,6 +1,7 @@
 #### Introduction
 Companion code to Remi Akinwonmi's 2023 Master's Thesis "A stochastic dual dynamic programming approach to operational scheduling of long duration energy storage systems". This is a price taker model that incorporates stochastic elements to the price variable.
 
+READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS!
 
 #### Getting Started
 1. **Prerequisites**: 
@@ -31,9 +32,9 @@ Pkg.add("Distributions")
 
 #### Scripts Overview
 - `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electricity price uncertainty. It performs In-Sample and Out-of-Sample simulations of the policy.
-- `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy for various levels of foresight.
-- `Deterministic_Optimal_Control.jl`: Implements deterministic control solutions for perfect foresight market scenarios.
-- `Deterministic_Optimal_Control_RH.jl`: Rolling horizon strategy in deterministic optimal control.
+- `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy with various levels of foresight.
+- `Deterministic_Optimal_Control.jl`: Implements deterministic control solutions with perfect foresight market scenarios.
+- `Deterministic_Optimal_Control_RH.jl`: Rolling horizon strategy for deterministic optimal control.
 - `Monte_Carlo_Simulation.jl`: Monte Carlo simulation of the deterministic optimal control model from a distribution.
 
 To run `Stochastic_Dual_Dynamic_Programming.jl`, set parameters and the distribution of random variable. The initial Bound on the objective value is estimated by running `Monte_Carlo_Simulation.jl` for a large number of scenarios and using the mean and confidence interval of the objective values to calibrate the Bound. `Stochastic_Dual_Dynamic_Programming.jl` performs In-Sample and Out-of-Sample evaluations of the SDDP policy. Set the type of policy evaluation.  For out_of_sample_historic simulation, provide a vector of prices.
