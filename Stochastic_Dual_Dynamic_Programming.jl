@@ -15,10 +15,10 @@ function load_data(filepath)
 end
 
 # Scenario Generation Function
-function simulate_prices(data, method_type::String)
+function simulate_prices(data, method_type)
     price = zeros(8760)
 
-    if method_type == "t_distribution"
+    if method_type == :t_distribution
         # Student's t-distribution parameters
         df = 4.30  # Degrees of Freedom
         loc = 0.51 # Location
@@ -28,9 +28,9 @@ function simulate_prices(data, method_type::String)
             ε = rand(TDist(df), 1)[1] * scale + loc
             price[t] = calculate_price(data, t) + ε
         end
-    elseif method_type == "normal_distribution"
+    elseif method_type == :normal_distribution
         # Normal distribution parameters
-        μ, α = 0, 9.05372307007077
+        μ, α = 0, 9.05372307007077 # Mean, SD 
 
         for t in 1:8760
             ε = μ + α * randn()
@@ -579,7 +579,7 @@ data = load_data("SDDP_Hourly.csv")
 num_scenarios = 10_000
 
 #Distribution
-method_type = "normal_distribution" #or pass "t_distribution" if using a student t distribution
+method_type = :normal_distribution #or pass :t_distribution if using a student t distribution
 
 # Number of clusters
 k = 1000
