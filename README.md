@@ -34,7 +34,8 @@ Pkg.add("Distributions")
 - `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electricity price uncertainty.
 - `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy with various levels of foresight.
 - `Monte_Carlo_Simulation.jl`: Monte Carlo simulation of the deterministic optimal control model from a distribution.
-- `SDDP.bat`: This batch script runs both the Monte Carlo simulation and the SDDP script sequentially
+- `SDDP.bat`: This batch file runs both the Monte Carlo simulation and the SDDP script sequentially.
+- `SDDP.sh`: This shell script runs both the Monte Carlo simulation and the SDDP script sequentially.
 
 NOTE:
 - To run `Stochastic_Dual_Dynamic_Programming.jl`, set parameters and the distribution of random variable.
