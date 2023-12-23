@@ -48,7 +48,7 @@ NOTE:
 #### Running the Batch Script
 - On Windows, run the `SDDP.bat` file
 - On Linux/Mac, run the `SDDP.sh` file
-   - This will execute the Monte Carlo simulation first, which calculates and saves the bounds. Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
+   - This will execute the Monte Carlo simulation first, which calculates and saves the bounds (The bound is stochastic). Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
 - ##### Manual Computation of Bounds
    If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
    - Open the SDDP script (`Stochastic_Dual_Dynamic_Programming.jl`) in your IDE.
