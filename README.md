@@ -6,7 +6,7 @@ READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS
 #### Getting Started
 1. **Prerequisites**: 
    - Julia must be installed on your system. [Download Julia](https://julialang.org/downloads/).
-   - To run this script, ensure the following packages are installed in your Julia environment:
+   - To run these simulations, ensure the following packages are installed in your Julia environment:
       - CSV
       - DataFrames
       - Gurobi
