@@ -69,45 +69,10 @@ function optimize_price_deterministic(data, h, price)
         println("Optimization was not successful. Status: ", termination_status(Ptaker))
     end
 
-    #Collect Results
-    summary = solution_summary(Ptaker)
     objective_val = objective_value(Ptaker)
-    e_stored_values = collect(value.(e_stored))
-    e_charge_values = collect(value.(e_charge))
-    e_discharge_values = collect(value.(e_discharge))
-    e_pur_values = collect(value.(e_pur))
-    e_sold_values = collect(value.(e_sold))
-    profit_values = collect(value.(profit))
-    z_charge_values = collect(value.(z_charge))
-    z_dischar_values = collect(value.(z_dischar))
-    e_loss_values = collect(value.(e_loss))
-    e_aval_values = collect(value.(e_aval))
-    revenue_values = collect(value.(rev))
-    cost_values = collect(value.(cost))
-    cost_pur_values = collect(value.(cost_pur))
 
-    # Create a DataFrame to store the results
-    results_df = DataFrame(
-        e_stored = e_stored_values,
-        e_charge = [e_charge_values; missing],
-        e_discharge = [e_discharge_values; missing],
-        e_pur = [e_pur_values; missing],
-        e_sold = [e_sold_values; missing],
-        profit = [profit_values; missing],
-        z_charge = [z_charge_values; missing],
-        z_discharge = [z_dischar_values; missing],
-        e_loss = [e_loss_values; missing],
-        e_aval = [e_aval_values; missing],
-        revenue = [revenue_values; missing],
-        cost = [cost_values; missing],
-        cost_pur = [cost_pur_values; missing],
-    )
-
-
-    return results_df, objective_val, summary
+    return objective_val
 end
-
-
 
 # Scenario Generation Function
 function simulate_prices(data, method_type)
@@ -151,50 +116,49 @@ end
 ###################################################################################################################################
 # Main Script Execution
 ###################################################################################################################################
+
 # Define the directory path and filename
 data = CSV.read("/projects/reak4480/Documents/SDDP_Hourly.csv", DataFrames.DataFrame)
 
-#Distribution
-method_type = :normal_distribution #or pass :t_distribution if using a student t distribution
+# Distribution method
+method_type = :normal_distribution  # or :t_distribution for student t distribution
 
-# Define the different scenarios for discharge duration 'h'
-h_values = [24]#, 48, 168, 336, 720]
-loop = 2
+# Discharge duration scenarios
+h_values = [24, 48, 168, 336, 720]
+num_iterations = 1000 #can be adjusted
+
+# Initialize summary DataFrame
+summary_info = DataFrame(h = Int[], Mean_Objective = Float64[], CI_Lower = Float64[], CI_Upper = Float64[])
 
 for h in h_values
-    # Initialize a dictionary to hold results for each column for this 'h' value
-    results_dict = Dict{String, DataFrame}()
+    objective_vals = Float64[]
 
-    i = 1  # Initialize the iteration counter
-    while i <= loop
+    for i in 1:num_iterations
         price = simulate_prices(data, method_type)
-        results_df, objective_val, summary = optimize_price_deterministic(data, h, price)
-        print(summary)
-
-        # Loop over each column in results_df and store data in results_dict
-        for col in names(results_df)
-            # Initialize DataFrame for this column if it doesn't exist
-            if !haskey(results_dict, col)
-                results_dict[col] = DataFrame()
-            end
-            # Add iteration data as a new column
-            results_dict[col][!, "Iteration_$i"] = results_df[!, col]
-        end
-
+        objective_val = optimize_price_deterministic(data, h, price)
+        push!(objective_vals, objective_val)
         println("Objective Value for h=$(h): ", objective_val)
-        i += 1  # Increment iteration counter
     end
 
-    # Write the data to an Excel file for this 'h' value
-    excel_filename = "/projects/reak4480/Documents/Results/Monte_Carlo/test_Deterministic_results_h$(h).xlsx"
-    XLSX.openxlsx(excel_filename, mode="w") do xf
-        for (col_name, df) in results_dict
-            # Create or get a worksheet named after the column
-            sheetname = col_name  # Using the column name as the sheet name
-            sheet = XLSX.addsheet!(xf, sheetname)
-    
-            # Write DataFrame to the sheet
-            XLSX.writetable!(sheet, df, anchor_cell=XLSX.CellRef("A1"))
-        end
-    end
+    # Calculate mean and confidence interval
+    mean_objective = mean(objective_vals)
+    std_dev = std(objective_vals)
+    confidence_level = 0.95
+    df = num_iterations - 1
+    t_value = quantile(TDist(df), 1 - (1 - confidence_level)/2)
+    margin_error = t_value * std_dev / sqrt(num_iterations)
+    confidence_interval = (mean_objective - margin_error, mean_objective + margin_error)
+
+    push!(summary_info, (h, mean_objective, confidence_interval[1], confidence_interval[2]))
+end
+
+# Write summary to a CSV file
+csv_filename = "Monte_Carlo_Results.csv"
+CSV.write(csv_filename, summary_info)
+
+# Display the mean profit and CI for all discharge durations
+for row in eachrow(summary_info)
+    println("Discharge Duration: $(row.h) hours")
+    println("Mean Objective Value: $(row.Mean_Objective)")
+    println("95% Confidence Interval: ($(row.CI_Lower), $(row.CI_Upper))")
 end
