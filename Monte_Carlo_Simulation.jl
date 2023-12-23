@@ -163,13 +163,23 @@ for row in eachrow(summary_info)
     println("95% Confidence Interval: ($(row.CI_Lower), $(row.CI_Upper))")
 end
 
-# Safety margin for SDDP Bound. This is a percentahe and can be adjusted.
+# Safety margin for SDDP Bound. This is a percentage and can be adjusted.
 # We set this to have an optimistic bound that doesn't cut off a feasible solution
 safety_margin_percentage = 20
 
-# Calculate the initial bound for SDDP
-for row in eachrow(summary_info)
-    upper_confidence_bound = row.CI_Upper
-    adjusted_bound = upper_confidence_bound * (1 + safety_margin_percentage / 100)
-    println("Initial Bound for SDDP with Discharge Duration $(row.h) hours: ", adjusted_bound)
+# File path for the bounds
+bounds_file = "calculated_bounds.txt"
+
+# Open the file and write the bounds while calculating them
+open(bounds_file, "w") do io
+    for row in eachrow(summary_info)
+        upper_confidence_bound = row.CI_Upper
+        adjusted_bound = upper_confidence_bound * (1 + safety_margin_percentage / 100)
+
+        println("Initial Bound for SDDP with Discharge Duration $(row.h) hours: ", adjusted_bound)
+
+        # Write to file
+        println(io, adjusted_bound)
+    end
 end
+
