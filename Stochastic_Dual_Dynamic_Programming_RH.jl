@@ -230,7 +230,6 @@ h_values = [24, 48, 168, 336, 720]
 p = 1_000 #MW
 
 # Different Estimated Objective Bounds for different discharge durations
-# NOTE: THIS WAS ESTIMATED BY MONTE CARLO SIMULATIONS OF STOCHASTIC SEQUENCE OF NOISE!!!!!!
 # READ https://sddp.dev/stable/tutorial/warnings/#Choosing-an-initial-bound FOR MORE INFORMATION ON CHOOSING THE BOUND
 bounds = [40_000_000, 45_000_000, 50_000_000, 60_000_000, 70_000_000]
 
