@@ -34,6 +34,7 @@ Pkg.add("Distributions")
 - `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electricity price uncertainty.
 - `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy with various levels of foresight.
 - `Monte_Carlo_Simulation.jl`: Monte Carlo simulation of the deterministic optimal control model from a distribution.
+- `SDDP.bat`: This batch script runs both the Monte Carlo simulation and the SDDP script sequentially
 
 NOTE:
 - To run `Stochastic_Dual_Dynamic_Programming.jl`, set parameters and the distribution of random variable.
@@ -41,6 +42,19 @@ NOTE:
 - `Stochastic_Dual_Dynamic_Programming.jl` performs In-Sample and Out-of-Sample evaluations of the SDDP policy.
 - Set the type of policy evaluation.
 - For out_of_sample_historic simulation, provide a vector of prices.
+
+#### Running the Batch Script
+- On Windows, run the `SDDP.bat` file
+- On Linux/Mac, run the `SDDP.sh` file
+   - This will execute the Monte Carlo simulation first, which calculates and saves the bounds. Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
+- ##### Manual Computation of Bounds
+If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
+
+Open the SDDP Script:
+Open the SDDP script (sddp_script.jl) in a text editor.
+
+Comment Out the Bounds Reading Section:
+Find the section where the script reads the bounds from the file. Comment out this section to prevent the script from reading the file. It might look like this:
 
 #### Documentation
 - Detailed information can be found in the [SDDP.jl documentation](https://sddp.dev/stable).
