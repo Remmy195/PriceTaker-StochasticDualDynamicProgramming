@@ -118,7 +118,7 @@ end
 ###################################################################################################################################
 
 # Define the directory path and filename
-data = CSV.read("/projects/reak4480/Documents/SDDP_Hourly.csv", DataFrames.DataFrame)
+data = CSV.read("SDDP_Hourly.csv", DataFrames.DataFrame)
 
 # Distribution method
 method_type = :normal_distribution  # or :t_distribution for student t distribution
