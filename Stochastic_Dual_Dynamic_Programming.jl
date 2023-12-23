@@ -616,7 +616,15 @@ h_values = [24, 48, 168, 336, 720]
 # Different Objective Bounds for different discharge durations
 # NOTE: THIS WAS ESTIMATED BY MONTE CARLO SIMULATIONS OF THE DETERMINISTIC MODEL!!!!!!
 # READ https://sddp.dev/stable/tutorial/warnings/#Choosing-an-initial-bound FOR MORE INFORMATION ON CHOOSING THE BOUND
-bounds = [35_000_000, 40_000_000, 50_000_000, 50_000_000, 70_000_000]
+# Read the bounds from the file
+bounds_file = "calculated_bounds.txt"
+bounds = Float64[]
+if isfile(bounds_file)
+    for line in readlines(bounds_file)
+        push!(bounds, parse(Float64, line))
+    end
+end
+#bounds = [35_000_000, 40_000_000, 50_000_000, 50_000_000, 70_000_000]
 
 # Specify the type of simulation you want to run here
 policy_simulation_type = :in_sample  # or pass :in_sample, :out_of_sample_simulator, :out_of_sample_historic
