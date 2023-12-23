@@ -50,17 +50,24 @@ NOTE:
 - ##### Manual Computation of Bounds
    If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
    - Open the SDDP script (`Stochastic_Dual_Dynamic_Programming.jl`) in your IDE.
-   - Find the section where the script reads the bounds from the file and comment out this section to prevent the script from reading the file.
+   - Find the section where the script reads the bounds from the file and comment out this section to prevent the script from reading the file like below.
      ```julia
      # Read the bounds from the file
-      #bounds_file = "calculated_bounds.txt"
-      #bounds = Float64[]
-      #if isfile(bounds_file)
-      #    for line in readlines(bounds_file)
-      #        push!(bounds, parse(Float64, line))
-      #    end
-      #end
+     #bounds_file = "calculated_bounds.txt"
+     #bounds = Float64[]
+     #if isfile(bounds_file)
+     #    for line in readlines(bounds_file)
+     #        push!(bounds, parse(Float64, line))
+     #    end
+     #end
      ```
+  - Uncomment the line where bounds are set manually. Adjust the values as deemed fit.
+    ```julia
+    bounds = [35_000_000, 40_000_000, 50_000_000, 50_000_000, 70_000_000]
+    ```
+  - Save the changes and run only the SDDP script.
+
+    
 #### Documentation
 - Detailed information can be found in the [SDDP.jl documentation](https://sddp.dev/stable).
 
