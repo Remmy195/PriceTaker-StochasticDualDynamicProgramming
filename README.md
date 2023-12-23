@@ -43,7 +43,7 @@ NOTE:
 - `Stochastic_Dual_Dynamic_Programming.jl` performs In-Sample and Out-of-Sample evaluations of the SDDP policy.
 - Set the type of policy evaluation.
 - For out_of_sample_historic simulation, provide a vector of prices.
-- All simulation scripts draw data from `SDDP_hourly`
+- All simulation scripts draw data from `SDDP_Hourly.csv`
 
 #### Running the Batch Script
 - On Windows, run the `SDDP.bat` file
