@@ -170,15 +170,11 @@ safety_margin_percentage = 20
 # File path for the bounds
 bounds_file = "calculated_bounds.txt"
 
-# Open the file and write the bounds while calculating them
 open(bounds_file, "w") do io
     for row in eachrow(summary_info)
         upper_confidence_bound = row.CI_Upper
         adjusted_bound = upper_confidence_bound * (1 + safety_margin_percentage / 100)
-
         println("Initial Bound for SDDP with Discharge Duration $(row.h) hours: ", adjusted_bound)
-
-        # Write to file
         println(io, adjusted_bound)
     end
 end
