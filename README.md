@@ -48,14 +48,19 @@ NOTE:
 - On Linux/Mac, run the `SDDP.sh` file
    - This will execute the Monte Carlo simulation first, which calculates and saves the bounds. Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
 - ##### Manual Computation of Bounds
-If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
-
-Open the SDDP Script:
-Open the SDDP script (sddp_script.jl) in a text editor.
-
-Comment Out the Bounds Reading Section:
-Find the section where the script reads the bounds from the file. Comment out this section to prevent the script from reading the file. It might look like this:
-
+   If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
+   - Open the SDDP script (`Stochastic_Dual_Dynamic_Programming.jl`) in your IDE.
+   - Find the section where the script reads the bounds from the file and comment out this section to prevent the script from reading the file.
+     ```julia
+     # Read the bounds from the file
+      #bounds_file = "calculated_bounds.txt"
+      #bounds = Float64[]
+      #if isfile(bounds_file)
+      #    for line in readlines(bounds_file)
+      #        push!(bounds, parse(Float64, line))
+      #    end
+      #end
+     ```
 #### Documentation
 - Detailed information can be found in the [SDDP.jl documentation](https://sddp.dev/stable).
 
