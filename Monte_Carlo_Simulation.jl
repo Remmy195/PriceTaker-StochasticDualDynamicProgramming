@@ -162,3 +162,14 @@ for row in eachrow(summary_info)
     println("Mean Objective Value: $(row.Mean_Objective)")
     println("95% Confidence Interval: ($(row.CI_Lower), $(row.CI_Upper))")
 end
+
+# Safety margin for SDDP Bound. This is a percentahe and can be adjusted.
+# We set this to have an optimistic bound that doesn't cut off a feasible solution
+safety_margin_percentage = 20
+
+# Calculate the initial bound for SDDP
+for row in eachrow(summary_info)
+    upper_confidence_bound = row.CI_Upper
+    adjusted_bound = upper_confidence_bound * (1 + safety_margin_percentage / 100)
+    println("Initial Bound for SDDP with Discharge Duration $(row.h) hours: ", adjusted_bound)
+end
