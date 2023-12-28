@@ -597,7 +597,7 @@ num_iterations = 200
 n_replications = 100
 n_replication = 1 # For historic price simulation, we are only simulating one sequence of noise
 
-# Scenario generation and plotting. We set number of plot scenarios to 10
+# Scenario generation and plotting. We set number of plot scenarios to 50
 plot_scenarios(data, 50, method_type)
 static_price_plot(data, 50, method_type)
 
