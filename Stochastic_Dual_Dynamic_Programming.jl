@@ -110,7 +110,7 @@ function create_sddp_markov_graph(reduced_scenarios, k, num_budget)
     return graph
 end
 
-# Function to Define and Train SDDP Model
+# Subproblem definition and model training function
 function define_and_train_sddp_model(graph, h, bound, cut_filename, iter_count)
     # Define the SDDP Model
     Ptaker = SDDP.PolicyGraph(
