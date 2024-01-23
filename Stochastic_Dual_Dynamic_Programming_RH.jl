@@ -220,8 +220,8 @@ num_scenarios = 1000
 num_budget = [100, 200, 300, 800, 2000, 3000]
 
 # Define parameters for the rolling horizon
-horizon_length_values = [23, 47, 71, 191, 359, 743] # Rolling periods
-opti_length = 24
+horizon_length_values = [23, 47, 71, 191, 359, 743] # Rolling horizon
+opti_length = 24 # Length of control horizon
 
 # Different scenarios for discharge duration 'h'
 h_values = [24, 48, 168, 336, 720]
