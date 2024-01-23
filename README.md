@@ -51,7 +51,6 @@ NOTE:
    - This will execute the Monte Carlo simulation first, which calculates and saves the bounds (The bound is stochastic). Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
 - ##### Manual Computation of Bounds
    If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
-   - Open the SDDP script (`Stochastic_Dual_Dynamic_Programming.jl`) in your IDE.
    - Find the section where the script reads the bounds from the file and comment out this section to prevent the script from reading the file like below.
      ```julia
      # Read the bounds from the file
