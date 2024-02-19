@@ -126,15 +126,11 @@ function define_and_train_sddp_model(graph, h, bound, cut_filename, iter_count)
         PF = 0
         eff_c = 0.725
         eff_dc = 0.507
-        cost_op = 0
-        rate_loss = 0
         ini_energy = E_max
         @variables(sp, begin
             0 <= e_stored <= E_max, SDDP.State, (initial_value = ini_energy)
             0 <= e_discharge <= p
             0 <= e_charge <= p
-            E_min <= e_aval <= E_max
-            e_loss
             z_charge, Bin
             z_discharge, Bin
         end)
@@ -147,20 +143,17 @@ function define_and_train_sddp_model(graph, h, bound, cut_filename, iter_count)
             e_discharge <= p * z_discharge
             z_charge + z_discharge <= 1
             e_stored.out == e_stored.in + e_charge - e_discharge
-            e_aval == (1 - rate_loss) * e_stored.out
         end)
         #Transiton Matrix and Constraints
         @constraints(
             sp, begin
-            e_loss == (e_stored.out*rate_loss)
             e_stored.out == e_stored.in + e_charge - e_discharge
         end
         ) 
         # Define the stage objective
         SDDP.parameterize(sp, [(price, nothing)]) do params
             ω = params[1]  # Extract the price component
-            cost_pur = @expression(sp, ω * e_pur)
-            w_cost = @expression(sp, cost_pur + (cost_op * e_aval))
+            w_cost = @expression(sp, ω * e_pur)
             w_rev = @expression(sp, ω * e_sold)
             @stageobjective(sp, w_rev - w_cost)
             return
