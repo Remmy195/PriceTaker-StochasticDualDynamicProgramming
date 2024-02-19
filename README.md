@@ -5,7 +5,7 @@ READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS
 
 #### Getting Started
 1. **Prerequisites**: 
-   - Julia must be installed on your system. [Download Julia](https://julialang.org/downloads/).
+   - Julia must be installed on your computer. [Download Julia](https://julialang.org/downloads/).
    - To run these simulations, ensure the following packages are installed in your Julia environment:
       - CSV
       - DataFrames
@@ -31,27 +31,27 @@ Pkg.add("Distributions")
 ```
 
 #### Scripts Overview
-- `Stochastic_Dual_Dynamic_Programming.jl`: Implements stochastic dual dynamic programming for optimal decision-making considering electricity price uncertainty.
-- `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy with various levels of foresight.
-- `Monte_Carlo_Optimal_Contol.jl`: Monte Carlo simulation of the deterministic optimal control model from a statistical distribution.
-- `SDDP.bat`: This batch file runs both the Monte Carlo simulation and the SDDP script sequentially.
-- `SDDP.sh`: This shell script runs both the Monte Carlo simulation and the SDDP script sequentially.
+- `Stochastic_Dual_Dynamic_Programming.jl`: Implements SDDP; performs in-sample and out-of-sample policy evaluations.
+- `Stochastic_Dual_Dynamic_Programming_RH.jl`: Implements a rolling horizon strategy with different levels of foresight.
+- `Monte_Carlo_Optimal_Contol.jl`: Monte Carlo simulation of the deterministic optimal control model.
+- `SDDP.bat`: This batch file runs the Monte Carlo simulation and the SDDP script sequentially.
+- `SDDP.sh`: This shell script runs the Monte Carlo simulation and the SDDP script sequentially.
 
 NOTE:
-- To run `Stochastic_Dual_Dynamic_Programming.jl`, set parameters and the distribution of random variable.
-- The initial Bound on the objective value is estimated by running `Monte_Carlo_Simulation.jl` for a large number of scenarios and using the mean and confidence interval of the objective value to calibrate the Bound.
+- To run `Stochastic_Dual_Dynamic_Programming.jl`, set parameters and the distribution of the random variable.
+- The initial Bound on the objective value is estimated by running `Monte_Carlo_Simulation.jl` for many scenarios and using the mean and confidence interval of the objective value to calibrate the bound.
 - `Stochastic_Dual_Dynamic_Programming.jl` performs In-Sample and Out-of-Sample evaluations of the SDDP policy.
 - Set the type of policy evaluation.
 - For out_of_sample_historic simulation, provide a vector of prices.
-- All simulation scripts draw data from `SDDP_Hourly.csv`
+- All simulation scripts draw data from `SDDP_Hourly.csv`.
 
 #### Running the Batch Script
 - On Windows, run the `SDDP.bat` file
 - On Linux/Mac, run the `SDDP.sh` file
-   - This will execute the Monte Carlo simulation first, which calculates and saves the bounds (The bound is stochastic). Then, it runs the SDDP script, which reads these bounds and proceeds with its computation.
+   - Either will execute the Monte Carlo simulation, which estimates the objective function bound (The bound is stochastic). Then, it runs the SDDP script with the estimated bound.
 - ##### Manual Computation of Bounds
-   If you prefer to set the bounds manually instead of having them computed by the Monte Carlo simulation, you can do so by modifying the SDDP script:
-   - Find the section where the script reads the bounds from the file and comment out this section to prevent the script from reading the file like below.
+   If you prefer to set the bound manually instead of computing the Monte Carlo simulation, you can do so by modifying the SDDP script:
+   - Find the section where the script reads the bounds from file and comment out this section to prevent the script from reading the file like below.
      ```julia
      # Read the bounds from the file
      #bounds_file = "calculated_bounds.txt"
