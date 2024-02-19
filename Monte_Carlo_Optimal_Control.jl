@@ -20,8 +20,6 @@ function optimize_price_deterministic(data, h, price)
     PF = 0 #Power Factor
     eff_c = 0.725 # Charge Efficiency
     eff_dc = 0.507 #Discharge Efficiency
-    cost_op = 0 # Operational Cost for each hour of Operation
-    rate_loss = 0 # Self Discharge rate 
     ini_energy = E_max #Initial State of Charge
 
     @variables(Ptaker, begin
@@ -30,10 +28,7 @@ function optimize_price_deterministic(data, h, price)
         e_sold[1:T] #Energy sold
         e_discharge[1:T] >= 0 #Energy discharged from storage
         e_charge[1:T] >= 0 #Energy Charged into storage
-        E_min <= e_aval[1:T] <= E_max #Energy available after self discharge
-        e_loss[1:T] #Energy lost due to self discharge
         rev[1:T] # Revenue from energy sold to grid
-        cost_pur[1:T] # Cost of energy bought from grid
         cost[1:T] # Total Cost
         profit[1:T] #Proft from arbitrage operation
         z_charge[1:T], Bin # Charge Decision
@@ -49,11 +44,8 @@ function optimize_price_deterministic(data, h, price)
         [t in 1:T], z_charge[t] + z_dischar[t] <= 1
         [t in 1:T], e_charge[t] == e_pur[t] * eff_c
         [t in 1:T], e_discharge[t] == e_sold[t] / eff_dc
-        [t in 1:T], e_aval[t] == e_stored[t] - e_loss[t]
-        [t in 1:T], e_loss[t] == e_stored[t] * rate_loss
         [t in 1:T], rev[t] == price[t] * e_sold[t]
-        [t in 1:T], cost[t] == cost_pur[t] + (cost_op*e_aval[t])
-        [t in 1:T], cost_pur[t] == e_pur[t] * price[t]
+        [t in 1:T], cost[t] == e_pur[t] * price[t]
         [t in 1:T], e_stored[t+1] == e_stored[t] + e_charge[t] - e_discharge[t]
         [t in 1:T], profit[t] == rev[t] - cost[t]
     end
@@ -164,7 +156,7 @@ for row in eachrow(summary_info)
 end
 
 # Safety margin for SDDP Bound. This is a percentage and can be adjusted.
-# We set this to have an optimistic bound that doesn't cut off a feasible solution
+# We set this to have an optimistic bound that doesn't cut off a feasible solution for the SDDP algorithm
 safety_margin_percentage = 20
 
 # File path for the bounds
