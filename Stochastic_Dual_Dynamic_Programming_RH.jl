@@ -102,8 +102,6 @@ function create_and_train_sddp_model(graph, horizon_range, initial_soc, h, p, bo
             0 <= e_stored <= E_max, SDDP.State, (initial_value = initial_soc)
             0 <= e_discharge <= p
             0 <= e_charge <= p
-            E_min <= e_aval <= E_max
-            e_loss
             z_charge, Bin
             z_discharge, Bin
         end)
@@ -116,19 +114,16 @@ function create_and_train_sddp_model(graph, horizon_range, initial_soc, h, p, bo
             e_discharge <= p * z_discharge
             z_charge + z_discharge <= 1
             e_stored.out == e_stored.in + e_charge - e_discharge
-            e_aval == (1 - rate_loss) * e_stored.out
         end)
         #Transiton Matrix and Constraints
         @constraints(
             sp, begin
-            e_loss == (e_stored.out*rate_loss)
             e_stored.out == e_stored.in + e_charge - e_discharge
         end
         ) 
         # Define the stage objective
         SDDP.parameterize(sp, [(price,)]) do (ω,)
-            cost_pur = @expression(sp, ω * e_pur)
-            w_cost = @expression(sp, cost_pur + (cost_op * e_aval))
+            w_cost = @expression(sp, ω * e_pur)
             w_rev = @expression(sp, ω * e_sold)
             @stageobjective(sp, w_rev - w_cost)
             return
@@ -146,8 +141,8 @@ function create_and_train_sddp_model(graph, horizon_range, initial_soc, h, p, bo
     return Ptaker
 end
 
-# Function to run the simulation for the trained model and update the results DataFrame
-# NOTE: We perform out of sample simlation of the optimal policy with a deterministic noise
+# Function to simulate the trained model and update the results
+# NOTE: We perform out-of-sample simulation of the optimal policy with a deterministic noise
 function run_simulation_and_update_results(Ptaker, results_df, start_hour, opti_length, horizon_range, data, graph)
     # Price data in a vector named 'Price' from DataFrame
     p = [data[t, :Price] for t in horizon_range]
