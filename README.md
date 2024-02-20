@@ -9,7 +9,7 @@ READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS
    - These packages are needed to be installed in your Julia environment:
       - CSV
       - DataFrames
-      - Gurobi  # Note: Gurobi is a commercial solver and may require a license.
+      - Gurobi              # Note: Gurobi is a commercial solver and may require a license.
       - Plots
       - SDDP
       - Clustering
