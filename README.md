@@ -5,30 +5,16 @@ READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS
 
 #### Getting Started
 1. **Prerequisites**: 
-   - Julia must be installed on your computer. [Download Julia](https://julialang.org/downloads/).
-   - To run these simulations, ensure the following packages are installed in your Julia environment:
+   - These simulations were developed in Julia. [Download Julia](https://julialang.org/downloads/).
+   - These packages are needed to be installed in your Julia environment:
       - CSV
       - DataFrames
-      - Gurobi
+      - Gurobi  # Note: Gurobi is a commercial solver and may require a license.
       - Plots
       - SDDP
       - Clustering
       - StatsPlots
       - Distributions
-
-You can install these packages by running the following commands in your Julia environment:
-
-```julia
-using Pkg
-Pkg.add("CSV")
-Pkg.add("DataFrames")
-Pkg.add("Gurobi")  # Note: Gurobi is a commercial solver and may require a license.
-Pkg.add("Plots")
-Pkg.add("SDDP")
-Pkg.add("Clustering")
-Pkg.add("StatsPlots")
-Pkg.add("Distributions")
-```
 
 #### Scripts Overview
 - `Stochastic_Dual_Dynamic_Programming.jl`: Implements SDDP; performs in-sample and out-of-sample policy evaluations.
