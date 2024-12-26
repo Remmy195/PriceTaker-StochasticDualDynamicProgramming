@@ -1,5 +1,5 @@
 #### Introduction
-Companion code to Remi Akinwonmi's 2023 Master's Thesis "A stochastic dual dynamic programming approach to operational scheduling of long duration energy storage systems." This is a price-taker model that incorporates stochastic elements into the price variable.
+Companion code to Master's Thesis "A stochastic dual dynamic programming approach to operational scheduling of long duration energy storage systems." This is a price-taker model that incorporates stochastic elements into the price variable.
 
 READ [SDDP.jl documentation](https://sddp.dev/stable) BEFORE RUNNING THE SCRIPTS!
 
